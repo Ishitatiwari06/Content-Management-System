@@ -2,8 +2,11 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import authRoutes from "./routes/auth.route.js";
-import artifactRoutes from "./routes/artifacts.route.js"
+import artifactRoutes from "./routes/artifact.routes.js"
+import likeRoutes from "./routes/likes.route.js"
 import cookieParser from "cookie-parser";
+import comment from "./routes/comment.route.js";
+
 const app = express();
 
 /* Middlewares */
@@ -24,7 +27,9 @@ app.get("/", (req, res) => {
 });
 
 app.use("/auth",authRoutes);
-app.use("/artifacts", artifactRoutes);
+app.use("/artifact", artifactRoutes);
+app.use("/likes",likeRoutes)
+app.use("/comments",comment);
 export default app;
 
 

@@ -6,6 +6,9 @@ import artifactRoutes from "./routes/artifact.routes.js"
 import likeRoutes from "./routes/likes.route.js"
 import cookieParser from "cookie-parser";
 import comment from "./routes/comment.route.js";
+import { testing } from "./cron/testing.js";
+import { dailyArchiveJob } from "./cron/dailyArchiveJob.js";
+import webhookRoutes from "./webhook/webhooks.js"
 
 const app = express();
 
@@ -15,7 +18,8 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(morgan("dev"));
 
-
+// testing();
+dailyArchiveJob();
 
 app.use(cookieParser());
 /* Test Route */
@@ -26,6 +30,7 @@ app.get("/", (req, res) => {
   });
 });
 
+app.use("/webhooks",webhookRoutes)
 app.use("/auth",authRoutes);
 app.use("/artifact", artifactRoutes);
 app.use("/likes",likeRoutes)

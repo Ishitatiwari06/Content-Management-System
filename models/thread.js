@@ -10,7 +10,8 @@ const threadSchema = new mongoose.Schema(
       }
     ],
     lastMessage: {
-      type: String
+      type: String,
+      default:""
     }
   },
   { timestamps: true }

@@ -9,7 +9,7 @@ import comment from "./routes/comment.route.js";
 import { testing } from "./cron/testing.js";
 import { dailyArchiveJob } from "./cron/dailyArchiveJob.js";
 import webhookRoutes from "./webhook/webhooks.js"
-
+import chatRoutes from "./routes/chats.route.js"
 const app = express();
 
 /* Middlewares */
@@ -30,6 +30,7 @@ app.get("/", (req, res) => {
   });
 });
 
+app.use("/chats",chatRoutes)
 app.use("/webhooks",webhookRoutes)
 app.use("/auth",authRoutes);
 app.use("/artifact", artifactRoutes);

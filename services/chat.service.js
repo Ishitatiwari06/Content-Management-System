@@ -1,0 +1,43 @@
+import Chat from "../models/chat.js";
+import Thread from "../models/thread.js";
+
+export const getChatbyThreadService = async (threadId) => {
+    return await Chat.find({ thread: threadId })
+    .populate("sender", "name email")
+    .sort({createdAt:1});
+};
+
+export const sendChatService=async({
+    senderId,
+    receiverId,
+    message
+})=>{
+    console.log("sended message",senderId,receiverId);
+    
+    const thread=await findOrCreateThreadService(senderId,receiverId);
+    const chat=await Chat.create({
+        thread:thread._id,
+        sender:senderId,
+        message:message
+    });
+    thread.lastMessage=message;
+    thread.lastMessageAt=new Date();
+    await thread.save();
+    return chat;
+}
+
+export const findOrCreateThreadService=async(userId1,userId2)=>{
+    
+    console.log("checking",userId1,userId2);
+    const participants=[userId1,userId2].sort();
+    let thread=await Thread.findOne({
+        participants:{$all:participants},
+        $expr:{$eq:[{$size:"$participants"},2]}
+    });
+    if(!thread){
+        thread=await Thread.create({
+            participants
+        });
+    }
+    return thread;
+}

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket Test</title>
+</head>
+<body>
+    <h3>Live Chat Test</h3>
+
+    <input id="userId" placeholder="Your User ID">
+    <button onclick="connectUser()">Connect</button>
+    <br><br>
+
+    <input id="receiverId" placeholder="Receiver User ID">
+    <input id="message" placeholder="Message">
+    <button onclick="sendMessage()">send</button>
+
+    <div id="status" style="color: green; font-weight: bold;"></div>
+    <div id="messages"></div>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+        const socket = io("http://localhost:5000");
+
+        // Connection status
+        const statusDiv = document.getElementById("status");
+        socket.on("connect", () => {
+            statusDiv.innerText = "Connected to server";
+            statusDiv.style.color = "green";
+        });
+        socket.on("disconnect", () => {
+            statusDiv.innerText = "Disconnected from server";
+            statusDiv.style.color = "red";
+        });
+        socket.on("connect_error", (err) => {
+            statusDiv.innerText = "Connection error: " + err.message;
+            statusDiv.style.color = "red";
+            console.error("Socket connection error:", err);
+        });
+
+        function connectUser() {
+            const userId = document.getElementById("userId").value;
+            socket.emit("user-online", userId);
+        }
+        function sendMessage() {
+            const senderId = document.getElementById("userId").value;
+            const receiverId = document.getElementById("receiverId").value;
+            const message = document.getElementById("message").value;
+            socket.emit("send-message", { senderId, receiverId, message });
+        }
+
+        socket.on("receive-message", (data) => {
+            appendMessage(`Received from ${data.senderId}: `, data.message);
+        });
+        socket.on("message-sent", (data) => {
+            appendMessage("You sent: ", data.message);
+        });
+
+        function appendMessage(prefix, message) {
+            const div = document.getElementById("messages");
+            const messageDiv = document.createElement("div");
+            messageDiv.innerText = prefix + message;
+            div.append(messageDiv);
+        }
+    </script>
+</body>
+</html>
